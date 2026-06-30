@@ -1,0 +1,74 @@
+from pathlib import Path
+import time
+
+from extractor import get_document
+from parser import parse_page
+from writer import write_records
+from logger import logger
+from config import CSV_PATH
+
+
+def main():
+    start_time = time.perf_counter()
+
+    logger.info("Starting Header Sync Job...")
+
+    # Remove old CSV if it exists
+    if CSV_PATH.exists():
+        CSV_PATH.unlink()
+
+    total_records = 0
+
+    doc = get_document()
+
+    try:
+        total_pages = len(doc)
+
+        for page_number in range(total_pages):
+
+            try:
+                page = doc[page_number]
+
+                lines = page.get_text().splitlines()
+
+                records = parse_page(lines)
+
+                write_records(records)
+
+                total_records += len(records)
+
+                if (page_number + 1) % 100 == 0:
+                    logger.info(
+                        f"Processed {page_number + 1}/{total_pages} pages"
+                    )
+
+            except Exception:
+                logger.exception(
+                    f"Failed processing page {page_number + 1}"
+                )
+
+    finally:
+        doc.close()
+
+    end_time = time.perf_counter()
+
+    logger.info(
+        f"""
+==========================
+PDF Processed Successfully
+
+Pages Processed : {total_pages}
+Records Written : {total_records}
+CSV Generated   : {CSV_PATH}
+
+Time Taken       : {end_time - start_time:.2f} seconds
+
+==========================
+"""
+    )
+
+    logger.info("Header Sync Job Completed.")
+
+
+if __name__ == "__main__":
+    main()
