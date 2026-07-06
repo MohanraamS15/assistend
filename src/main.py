@@ -1,11 +1,11 @@
-from pathlib import Path
 import time
 
-from extractor import get_document
-from parser import parse_page
-from writer import write_records
-from logger import logger
-from config import CSV_PATH
+from src.extractor import get_document
+from src.parser import parse_page
+from src.writer import write_records
+from src.logger import logger
+from src.config import CSV_PATH
+from src.db.importer import import_csv
 
 
 def main():
@@ -66,6 +66,13 @@ Time Taken       : {end_time - start_time:.2f} seconds
 ==========================
 """
     )
+
+    # Import CSV into PostgreSQL
+    logger.info("Starting PostgreSQL import...")
+
+    import_csv(CSV_PATH)
+
+    logger.info("PostgreSQL import completed.")
 
     logger.info("Header Sync Job Completed.")
 

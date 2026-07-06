@@ -1,6 +1,6 @@
 import requests
 
-from config import PDF_URL, PDF_PATH
+from src.config import PDF_URL, PDF_PATH
 
 
 def download_pdf():

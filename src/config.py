@@ -1,5 +1,13 @@
 from pathlib import Path
 
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
+
+#DB
+DATABASE_URL = os.getenv("DATABASE_URL")
+
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # URLs
@@ -18,3 +26,4 @@ LOG_DIR.mkdir(exist_ok=True)
 PDF_PATH = DOWNLOAD_DIR / "latest_headers.pdf"
 CSV_PATH = OUTPUT_DIR / "headers.csv"
 LOG_FILE = LOG_DIR / "header_sync.log"
+

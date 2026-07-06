@@ -1,7 +1,7 @@
 import logging
 from pathlib import Path
 
-from config import LOG_FILE
+from src.config import LOG_FILE
 
 logging.basicConfig(
     level=logging.INFO,

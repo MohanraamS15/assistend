@@ -4,3 +4,4 @@ downloads/
 output/
 logs/
 *.pyc
+.env

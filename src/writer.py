@@ -1,6 +1,6 @@
 import csv
 from pathlib import Path
-from config import CSV_PATH
+from src.config import CSV_PATH
 
 
 
