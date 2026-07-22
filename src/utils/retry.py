@@ -1,14 +1,15 @@
 import time
 
 from src.logger import logger
+from src.config import RETRY_COUNT, RETRY_INITIAL_DELAY, RETRY_BACKOFF_FACTOR
 
 
 def retry(
     func,
     *args,
-    retries=4,
-    initial_delay=2,
-    backoff_factor=2,
+    retries=RETRY_COUNT,
+    initial_delay=RETRY_INITIAL_DELAY,
+    backoff_factor=RETRY_BACKOFF_FACTOR,
     exceptions=(Exception,),
     **kwargs,
 ):

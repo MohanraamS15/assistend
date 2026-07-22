@@ -6,9 +6,10 @@ from sqlalchemy import text
 from src.db.database import get_session
 from src.db.models import SenderIDMappingStaging
 from src.logger import logger
+from src.config import BATCH_SIZE
 
 
-def import_csv(csv_path: str, batch_size: int = 5000):
+def import_csv(csv_path: str, batch_size: int = BATCH_SIZE):
 
     """
     Import Sender ID mappings from a CSV file into the staging table.
