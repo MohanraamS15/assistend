@@ -22,6 +22,8 @@ The pipeline is designed to be reliable, idempotent, and production-ready by avo
 - Structured logging
 - Transaction-safe database synchronization
 - Idempotent execution (skips processing when the source PDF is unchanged)
+- Comprehensive test suite covering 44 test cases (using pytest)
+- Environment-based configuration via `.env` file
 
 ---
 
@@ -65,6 +67,7 @@ Save Latest Hash
 
 ```
 .
+├── .env                  # Environment configuration
 ├── downloads/
 ├── logs/
 ├── metadata/
@@ -79,6 +82,7 @@ Save Latest Hash
 │   ├── writer.py
 │   ├── main.py
 │   └── ...
+├── tests/                # Test suite
 ├── requirements.txt
 └── README.md
 ```
@@ -108,10 +112,15 @@ pip install -r requirements.txt
 
 ## Configuration
 
-Update the required configuration values in:
+The project uses environment variables for configuration. Create a `.env` file in the root directory:
 
-```
-src/config.py
+```env
+DATABASE_URL=postgresql://postgres:1234@localhost:5432/senderid_mapping
+PDF_URL=https://www.ucc-bsnl.co.in/header_link_doc/
+RETRY_COUNT=4
+RETRY_INITIAL_DELAY=2
+RETRY_BACKOFF_FACTOR=2
+BATCH_SIZE=5000
 ```
 
 ---
@@ -120,6 +129,18 @@ src/config.py
 
 ```bash
 python -m src.main
+```
+
+---
+
+## Testing
+
+The project includes a comprehensive test suite covering 44 test cases (download, parsing, database, retry logic, etc.).
+
+To run the tests:
+
+```bash
+pytest tests/ -v
 ```
 
 ---

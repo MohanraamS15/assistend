@@ -12,6 +12,9 @@ def download_pdf():
 
     response.raise_for_status()
 
+    if not response.content:
+        raise ValueError("Downloaded PDF is empty (0 bytes)")
+
     with open(PDF_PATH, "wb") as file:
         file.write(response.content)
 
