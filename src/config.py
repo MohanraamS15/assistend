@@ -27,3 +27,9 @@ PDF_PATH = DOWNLOAD_DIR / "latest_headers.pdf"
 CSV_PATH = OUTPUT_DIR / "headers.csv"
 LOG_FILE = LOG_DIR / "header_sync.log"
 
+#Metadata
+METADATA_DIR = BASE_DIR / "metadata"
+METADATA_DIR.mkdir(exist_ok=True)
+
+METADATA_FILE = METADATA_DIR / "sync_metadata.json"
+
