@@ -1,32 +1,46 @@
 import csv
 import time
 
+from sqlalchemy import text
+
 from src.db.database import get_session
-from src.db.models import SenderIDMapping
+from src.db.models import SenderIDMappingStaging
 from src.logger import logger
 
 
 def import_csv(csv_path: str, batch_size: int = 5000):
     """
-    Import Sender ID mappings from a CSV file into PostgreSQL.
+    Import Sender ID mappings from a CSV file into the staging table.
     """
 
-    start_time = time.time()
+    start_time = time.perf_counter()
     total_rows = 0
     batch = []
 
-    logger.info("Starting CSV import...")
+    logger.info("Starting staging import...")
 
     with get_session() as session:
         try:
+            # Clear staging table before importing new data
+            logger.info("Clearing staging table...")
+
+            session.exec(
+                text(
+                    "TRUNCATE TABLE sender_id_mapping_staging RESTART IDENTITY"
+                )
+            )
+            session.commit()
+
+            logger.info("Staging table cleared.")
+
             with open(csv_path, mode="r", encoding="utf-8") as file:
                 reader = csv.DictReader(file)
 
                 for row in reader:
 
-                    mapping = SenderIDMapping(
-                        sender_id=row["Header"],
-                        sender_entity=row["Entity Name"]
+                    mapping = SenderIDMappingStaging(
+                        sender_id=row["Header"].strip(),
+                        sender_entity=row["Entity Name"].strip()
                     )
 
                     batch.append(mapping)
@@ -37,7 +51,7 @@ def import_csv(csv_path: str, batch_size: int = 5000):
 
                         total_rows += len(batch)
 
-                        logger.info(f"Imported {total_rows} rows")
+                        logger.info(f"Imported {total_rows} rows into staging")
 
                         batch.clear()
 
@@ -48,17 +62,17 @@ def import_csv(csv_path: str, batch_size: int = 5000):
 
                     total_rows += len(batch)
 
-                    logger.info(f"Imported {total_rows} rows")
+                    logger.info(f"Imported {total_rows} rows into staging")
 
-            elapsed = time.time() - start_time
+            elapsed = time.perf_counter() - start_time
 
             logger.info("=" * 50)
-            logger.info("CSV Import Completed")
+            logger.info("Staging Import Completed")
             logger.info(f"Total Rows Imported : {total_rows}")
             logger.info(f"Time Taken          : {elapsed:.2f} seconds")
             logger.info("=" * 50)
 
-        except Exception as e:
+        except Exception:
             session.rollback()
-            logger.exception("Import failed.")
-            raise e
+            logger.exception("Staging import failed.")
+            raise
