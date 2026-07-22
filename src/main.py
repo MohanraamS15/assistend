@@ -8,6 +8,8 @@ from src.logger import logger
 from src.config import CSV_PATH, PDF_PATH
 from src.db.importer import import_csv
 from src.db.sync_service import sync_database
+from src.utils.retry import retry
+
 from src.db.reports import generate_report
 from src.utils.hash_utils import (
     calculate_hash,
@@ -22,7 +24,8 @@ def main():
     logger.info("Starting Header Sync Job...")
 
     # Step 1: Download the latest PDF
-    download_pdf()
+    # download_pdf()
+    retry(download_pdf)
 
     # Step 2: Check if PDF has changed
     current_hash = calculate_hash(PDF_PATH)
@@ -56,7 +59,7 @@ def main():
 
                 total_records += len(records)
 
-                if (page_number + 1) % 100 == 0:
+                if (page_number + 1) % 1000 == 0:
                     logger.info(
                         f"Processed {page_number + 1}/{total_pages} pages"
                     )
@@ -88,11 +91,11 @@ Time Taken      : {end_time - start_time:.2f} seconds
 
     logger.info("Starting PostgreSQL import...")
 
-    import_csv(CSV_PATH)
+    retry(import_csv, CSV_PATH)
 
     logger.info("Staging import completed.")
 
-    sync_stats = sync_database()
+    sync_stats = retry(sync_database)
 
     report_path = generate_report(sync_stats)
 

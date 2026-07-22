@@ -14,3 +14,4 @@ def download_pdf():
 
     with open(PDF_PATH, "wb") as file:
         file.write(response.content)
+
